@@ -1,6 +1,6 @@
 {
-  "name": "Kaarigar",
-  "short_name": "Kaarigar",
+  "name": "Kaarigar Technician",
+  "short_name": "Kaarigar Tech",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1C2541",
