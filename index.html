@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Kaarigar</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1C2541" />
+<link rel="icon" href="icon-192.png" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Inter', sans-serif; background: #F6F4EF; color: #20242C;
+    min-height: 100vh; display: flex; justify-content: center;
+  }
+  .app { width: 100%; max-width: 420px; min-height: 100vh; background: #F6F4EF; padding-bottom: 40px; }
+  header {
+    background: linear-gradient(135deg, #1C2541, #223163);
+    padding: 24px 20px 18px; color: #F6F4EF; position: sticky; top: 0; z-index: 5;
+  }
+  header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; margin: 0; letter-spacing: 0.02em; }
+  header p { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: #F2A93B; margin: 4px 0 0; }
+  main { padding: 20px; }
+  h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; margin: 0 0 4px; color: #1C2541; }
+  h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 19px; margin: 0 0 10px; color: #1C2541; }
+  .sub { color: #8891A0; font-size: 14px; margin: 0 0 16px; }
+
+  .banner {
+    display: flex; gap: 8px; align-items: flex-start; padding: 12px 14px; border-radius: 8px;
+    background: rgba(199,125,30,0.1); border: 1px solid rgba(199,125,30,0.3); color: #8B5E1E;
+    font-size: 12px; margin-bottom: 16px; display: none;
+  }
+  .banner.show { display: flex; }
+  .banner button {
+    background: none; border: none; color: #1C2541; text-decoration: underline; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace; padding: 0; margin-top: 4px; cursor: pointer;
+  }
+
+  .service-card {
+    display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+    background: #FBFAF6; border: none; border-radius: 10px; padding: 16px;
+    box-shadow: 0 1px 3px rgba(28,37,65,0.08); margin-bottom: 12px; cursor: pointer;
+  }
+  .service-icon {
+    width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 22px; color: #fff; flex-shrink: 0;
+  }
+  .service-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #1C2541; line-height: 1; }
+  .service-sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8891A0; margin-top: 4px; }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 4px; background: none; border: none; color: #1C2541;
+    font-size: 14px; font-family: 'Inter', sans-serif; padding: 0; margin-bottom: 16px; cursor: pointer;
+  }
+
+  .sort-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .sort-chip {
+    padding: 7px 13px; border-radius: 999px; font-size: 12px; font-weight: 600; border: none; cursor: pointer;
+    background: rgba(32,36,44,0.06); color: #8891A0; font-family: 'Inter', sans-serif;
+  }
+  .sort-chip.active { background: #1C2541; color: #fff; }
+
+  .empty-box {
+    border: 1px dashed rgba(32,36,44,0.2); border-radius: 8px; padding: 24px; text-align: center;
+    color: #8891A0; font-size: 14px; font-family: 'Inter', sans-serif;
+  }
+
+  .tech-card { display: flex; background: #FBFAF6; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(28,37,65,0.08); margin-bottom: 12px; }
+  .tech-stub { width: 56px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 0; color: #fff; }
+  .tech-stub-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.15em; opacity: 0.8; }
+  .tech-body { flex: 1; padding: 12px; min-width: 0; }
+  .tech-top { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(28,37,65,0.08); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #1C2541; flex-shrink: 0; }
+  .tech-name { font-weight: 600; font-size: 15px; color: #20242C; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .live-row { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #2E8B57; position: relative; }
+  .live-dot::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: #2E8B57; opacity: 0.4; animation: ping 1.5s infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2.2); opacity: 0; } }
+  .live-label { font-size: 10px; color: #2E8B57; font-weight: 600; letter-spacing: 0.05em; }
+  .meta-row { display: flex; gap: 12px; margin-top: 8px; color: #8891A0; font-family: 'JetBrains Mono', monospace; font-size: 13px; flex-wrap: wrap; }
+  .meta-row span { color: #20242C; display: flex; align-items: center; gap: 4px; }
+  .call-btn {
+    margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: #F2A93B; color: #1C2541; font-weight: 700; font-size: 14px; padding: 11px; border-radius: 8px;
+    text-decoration: none; font-family: 'Inter', sans-serif;
+  }
+  .searching { display: flex; flex-direction: column; align-items: center; padding: 60px 0; color: #8891A0; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .spinner { width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(242,169,59,0.3); border-top-color: #F2A93B; animation: spin 0.8s linear infinite; margin-bottom: 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>KAARIGAR</h1>
+    <p>LIVE GPS · REAL BACKEND</p>
+  </header>
+  <main>
+    <div class="banner" id="geo-banner"></div>
+
+    <div id="screen-services">
+      <h2>What do you need fixed?</h2>
+      <p class="sub">We use your live location to find who's actually closest.</p>
+      <button class="service-card" data-trade="plumbing" style="--c:#2F6FA8">
+        <div class="service-icon" style="background:linear-gradient(160deg,#2F6FA8,#2F6FA8CC)">🔧</div>
+        <div><div class="service-title">Plumbing</div><div class="service-sub">live search</div></div>
+      </button>
+      <button class="service-card" data-trade="electrical" style="--c:#C77D1E">
+        <div class="service-icon" style="background:linear-gradient(160deg,#C77D1E,#C77D1ECC)">⚡</div>
+        <div><div class="service-title">Electrical</div><div class="service-sub">live search</div></div>
+      </button>
+      <button class="service-card" data-trade="carpentry" style="--c:#8B5E3C">
+        <div class="service-icon" style="background:linear-gradient(160deg,#8B5E3C,#8B5E3CCC)">🔨</div>
+        <div><div class="service-title">Carpentry</div><div class="service-sub">live search</div></div>
+      </button>
+    </div>
+
+    <div id="screen-list" style="display:none">
+      <button class="back-btn" id="btn-back">← All services</button>
+      <h3 id="list-heading">0 online now</h3>
+      <div class="sort-row">
+        <button class="sort-chip active" id="sort-nearest">Nearest</button>
+        <button class="sort-chip" id="sort-rated">Top rated</button>
+      </div>
+      <div id="list-content"></div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVp07idh5slisdnJ6MWXc439_mEp17cns",
+    authDomain: "kaarigar-technician.firebaseapp.com",
+    projectId: "kaarigar-technician",
+    storageBucket: "kaarigar-technician.firebasestorage.app",
+    messagingSenderId: "717561353020",
+    appId: "1:717561353020:web:0e4cc925fb7ab3d9b74439"
+  };
+
+  const TRADES = {
+    plumbing: { label: "Plumbing", icon: "🔧", color: "#2F6FA8" },
+    electrical: { label: "Electrical", icon: "⚡", color: "#C77D1E" },
+    carpentry: { label: "Carpentry", icon: "🔨", color: "#8B5E3C" }
+  };
+  const STALE_MS = 2 * 60 * 1000;
+  const AVG_SPEED_KMH = 18;
+  const DEFAULT_COORDS = { lat: 19.076, lng: 72.8777 };
+
+  const rad = (d) => (d * Math.PI) / 180;
+  function haversineKm(a, b) {
+    const R = 6371;
+    const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+    const s = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
+  }
+  const etaMin = (km) => Math.max(2, Math.round((km/AVG_SPEED_KMH)*60));
+  const initials = (n) => (n||"?").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  }
+
+  // ------------------------------------------------------------------
+  // UI wiring — all independent of Firebase, so the screen always works
+  // ------------------------------------------------------------------
+  const screenServices = document.getElementById("screen-services");
+  const screenList = document.getElementById("screen-list");
+  const listHeading = document.getElementById("list-heading");
+  const listContent = document.getElementById("list-content");
+  const geoBanner = document.getElementById("geo-banner");
+  const sortNearestBtn = document.getElementById("sort-nearest");
+  const sortRatedBtn = document.getElementById("sort-rated");
+
+  let userCoords = null;
+  let geoStatus = "idle";
+  let currentTrade = null;
+  let sortMode = "nearest";
+  let latestResults = [];
+  let unsubscribe = null;
+  let db = null, fsCollection = null, fsOnSnapshot = null;
+
+  function showBanner() {
+    const msgs = {
+      locating: "Getting your location…",
+      denied: "Location permission denied — using an approximate Mumbai location instead.",
+      unsupported: "This browser can't provide GPS — using an approximate location instead.",
+      error: "Couldn't get a GPS fix — using an approximate location instead."
+    };
+    if (geoStatus === "active" || geoStatus === "idle") {
+      geoBanner.classList.remove("show");
+      return;
+    }
+    geoBanner.classList.add("show");
+    geoBanner.innerHTML = `<div>⚠️</div><div>${msgs[geoStatus] || "Locating…"}${
+      (geoStatus === "denied" || geoStatus === "error") ? '<br/><button id="retry-geo">RETRY LOCATION</button>' : ""
+    }</div>`;
+    const retryBtn = document.getElementById("retry-geo");
+    if (retryBtn) retryBtn.addEventListener("click", locate);
+  }
+
+  function locate() {
+    if (!("geolocation" in navigator)) { geoStatus = "unsupported"; showBanner(); return; }
+    geoStatus = "locating"; showBanner();
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude }; geoStatus = "active"; showBanner(); renderList(); },
+      (err) => { geoStatus = err.code === 1 ? "denied" : "error"; showBanner(); renderList(); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
+    );
+  }
+  locate();
+
+  document.querySelectorAll(".service-card").forEach((card) => {
+    card.addEventListener("click", () => openTrade(card.dataset.trade));
+  });
+  document.getElementById("btn-back").addEventListener("click", closeTrade);
+  sortNearestBtn.addEventListener("click", () => { sortMode = "nearest"; updateSortUI(); renderList(); });
+  sortRatedBtn.addEventListener("click", () => { sortMode = "rated"; updateSortUI(); renderList(); });
+
+  function updateSortUI() {
+    sortNearestBtn.classList.toggle("active", sortMode === "nearest");
+    sortRatedBtn.classList.toggle("active", sortMode === "rated");
+  }
+
+  function openTrade(trade) {
+    currentTrade = trade;
+    screenServices.style.display = "none";
+    screenList.style.display = "block";
+    listContent.innerHTML = `<div class="searching"><div class="spinner"></div>SEARCHING LIVE DATABASE…</div>`;
+    subscribeToTechnicians();
+  }
+  function closeTrade() {
+    currentTrade = null;
+    screenList.style.display = "none";
+    screenServices.style.display = "block";
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  }
+
+  function subscribeToTechnicians() {
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    if (!db || !fsCollection || !fsOnSnapshot) return; // will retry once Firebase loads (see below)
+    unsubscribe = fsOnSnapshot(fsCollection(db, "technicians"), (snapshot) => {
+      const now = Date.now();
+      const coords = userCoords || DEFAULT_COORDS;
+      const results = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (!data.online) return;
+        if (!Array.isArray(data.trades) || !data.trades.includes(currentTrade)) return;
+        if (typeof data.lat !== "number" || typeof data.lng !== "number") return;
+        const updatedAt = data.updatedAt && data.updatedAt.toMillis ? data.updatedAt.toMillis() : (data.updatedAt || 0);
+        if (now - updatedAt > STALE_MS) return;
+        const distance = haversineKm(coords, { lat: data.lat, lng: data.lng });
+        results.push({ ...data, id: docSnap.id, distance });
+      });
+      latestResults = results;
+      renderList();
+    }, (err) => {
+      listContent.innerHTML = `<div class="empty-box">⚠ Couldn't load live data: ${err.message}</div>`;
+    });
+  }
+
+  function renderList() {
+    if (!currentTrade) return;
+    if (!db) {
+      listContent.innerHTML = `<div class="searching"><div class="spinner"></div>CONNECTING…</div>`;
+      return;
+    }
+    const trade = TRADES[currentTrade];
+    const sorted = [...latestResults].sort((a, b) => sortMode === "nearest" ? a.distance - b.distance : (b.rating||0) - (a.rating||0));
+    listHeading.textContent = `${sorted.length} ${trade.label.toLowerCase()} online now`;
+
+    if (sorted.length === 0) {
+      listContent.innerHTML = `<div class="empty-box">No ${trade.label.toLowerCase()} are online right now. Open the Technician app on another device and go online to test live matching.</div>`;
+      return;
+    }
+
+    listContent.innerHTML = sorted.map((t) => `
+      <div class="tech-card">
+        <div class="tech-stub" style="background:linear-gradient(160deg,${trade.color},${trade.color}CC)">
+          <div style="font-size:18px">${trade.icon}</div>
+          <div class="tech-stub-label">${currentTrade.slice(0,3).toUpperCase()}</div>
+        </div>
+        <div class="tech-body">
+          <div class="tech-top">
+            <div class="avatar">${initials(t.name)}</div>
+            <div style="flex:1;min-width:0">
+              <div class="tech-name">${t.name || "Unnamed technician"}</div>
+              <div class="live-row"><span class="live-dot"></span><span class="live-label">LIVE · ONLINE</span></div>
+            </div>
+          </div>
+          <div class="meta-row">
+            <span>📍 ${t.distance.toFixed(2)} km</span>
+            <span>⏱ ~${etaMin(t.distance)} min</span>
+            <span>★ ${(t.rating || 4.7).toFixed(1)}</span>
+          </div>
+          <a class="call-btn" href="tel:${t.phone || ""}">📞 Call ${(t.name || "technician").split(" ")[0]}</a>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // ------------------------------------------------------------------
+  // Load Firebase LAST via dynamic import, wrapped in try/catch.
+  // ------------------------------------------------------------------
+  (async () => {
+    try {
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const app = initializeApp(firebaseConfig);
+      db = fs.getFirestore(app);
+      fsCollection = fs.collection;
+      fsOnSnapshot = fs.onSnapshot;
+      if (currentTrade) subscribeToTechnicians();
+    } catch (e) {
+      console.error("Firebase load failed:", e);
+      if (currentTrade) {
+        listContent.innerHTML = `<div class="empty-box">⚠ Couldn't connect to the live database: ${e.message}</div>`;
+      }
+    }
+  })();
+</script>
+</body>
+</html>
