@@ -16,6 +16,8 @@
   header h1 { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:26px; margin:0; letter-spacing:.02em; }
   header p { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.2em; color:#F2A93B; margin:3px 0 0; }
   main { padding:16px 16px 8px; }
+  h2 { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:22px; margin:0 0 4px; color:#1C2541; }
+  .sub { color:#8891A0; font-size:14px; margin:0 0 16px; }
 
   .location-bar { display:flex; align-items:center; gap:10px; background:#FBFAF6; border-radius:10px; padding:12px 14px; box-shadow:0 1px 3px rgba(28,37,65,.08); margin-bottom:14px; }
   .location-bar .pin { font-size:18px; }
@@ -25,7 +27,7 @@
 
   .hero { background:linear-gradient(135deg,#1C2541,#2A3A66); border-radius:14px; padding:20px; color:#F6F4EF; margin-bottom:20px; position:relative; overflow:hidden; }
   .hero::before { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; border-radius:50%; background:rgba(242,169,59,.12); }
-  .hero h2 { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px; margin:0 0 4px; position:relative; }
+  .hero h2 { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px; margin:0 0 4px; position:relative; color:#F6F4EF; }
   .hero p { font-size:12.5px; color:#C9CEDC; margin:0 0 14px; position:relative; }
   .hero-live { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.08); border-radius:8px; padding:9px 12px; position:relative; }
   .hero-live .dot { width:8px; height:8px; border-radius:50%; background:#4ADE80; position:relative; flex-shrink:0; }
@@ -34,11 +36,10 @@
   .hero-live span.count { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; }
 
   .section-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:19px; color:#1C2541; margin:0 0 12px; }
-
   .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
   .tile { display:flex; flex-direction:column; align-items:center; gap:6px; background:#FBFAF6; border:none; border-radius:12px; padding:12px 4px; box-shadow:0 1px 3px rgba(28,37,65,.07); cursor:pointer; }
   .tile .ic { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:19px; }
-  .tile .lbl { font-size:10.5px; font-weight:600; color:#20242C; text-align:center; line-height:1.2; }
+  .tile .lbl { font-size:10px; font-weight:600; color:#20242C; text-align:center; line-height:1.2; }
 
   .emergency { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#D65A3A,#C7401E); border-radius:14px; padding:16px 18px; color:#fff; margin-bottom:20px; cursor:pointer; border:none; width:100%; text-align:left; }
   .emergency .siren { font-size:26px; }
@@ -102,7 +103,7 @@
 
       <div class="hero">
         <h2>Trusted local technicians</h2>
-        <p>Verified professionals, a call away — fast, reliable, and nearby.</p>
+        <p>Verified professionals within 2 km — fast, reliable, and nearby.</p>
         <div class="hero-live">
           <span class="dot"></span>
           <span class="count" id="hero-count">— technicians online near you right now</span>
@@ -114,10 +115,7 @@
 
       <button class="emergency" id="btn-emergency">
         <div class="siren">🚨</div>
-        <div style="flex:1">
-          <h3>Need help now?</h3>
-          <p>See every technician online nearby, any trade</p>
-        </div>
+        <div style="flex:1"><h3>Need help now?</h3><p>See every technician online within 2 km, any trade</p></div>
         <div class="arrow">→</div>
       </button>
 
@@ -167,10 +165,14 @@
     { id:"pooja_pandit", label:"Pooja Pandit", icon:"🕉️", color:"#B8722E" },
     { id:"computer_repair", label:"Computer Repair", icon:"💻", color:"#45577A" },
     { id:"painter", label:"Painter", icon:"🎨", color:"#C15A4E" },
-    { id:"marriage_photography", label:"Photography", icon:"📷", color:"#A34D77" }
+    { id:"marriage_photography", label:"Photography", icon:"📷", color:"#A34D77" },
+    { id:"key_maker", label:"Key Maker", icon:"🔑", color:"#9C7A2E" },
+    { id:"water_supplier", label:"Water Supplier", icon:"🚛", color:"#2E7FA6" },
+    { id:"kabadi_wala", label:"Kabadi Wala", icon:"♻️", color:"#6B8E4E" }
   ];
   const TRADE_MAP = Object.fromEntries(TRADES.map(t => [t.id, t]));
   const STALE_MS = 2 * 60 * 1000;
+  const MAX_RANGE_KM = 2;
   const AVG_SPEED_KMH = 18;
   const DEFAULT_COORDS = { lat: 19.076, lng: 72.8777 };
 
@@ -184,13 +186,8 @@
   const etaMin = (km) => Math.max(2, Math.round((km/AVG_SPEED_KMH)*60));
   const initials = (n) => (n||"?").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase();
 
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {});
-  }
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
 
-  // ------------------------------------------------------------------
-  // UI wiring — independent of Firebase, always interactive
-  // ------------------------------------------------------------------
   const screenServices = document.getElementById("screen-services");
   const screenList = document.getElementById("screen-list");
   const listHeading = document.getElementById("list-heading");
@@ -204,12 +201,11 @@
 
   let userCoords = null;
   let geoStatus = "idle";
-  let currentTrade = null; // null = home screen, "__all__" = emergency view, or a trade id
+  let currentTrade = null;
   let sortMode = "nearest";
-  let allDocs = []; // raw docs from the single global snapshot
+  let allDocs = [];
   let db = null;
 
-  // Render the trade grid immediately (no dependency on anything async)
   tradeGrid.innerHTML = TRADES.map(t => `
     <button class="tile" data-trade="${t.id}">
       <div class="ic" style="background:linear-gradient(160deg,${t.color},${t.color}CC);color:#fff">${t.icon}</div>
@@ -222,7 +218,6 @@
   document.getElementById("btn-locate").addEventListener("click", locate);
   sortNearestBtn.addEventListener("click", () => { sortMode = "nearest"; updateSortUI(); renderList(); });
   sortRatedBtn.addEventListener("click", () => { sortMode = "rated"; updateSortUI(); renderList(); });
-
   function updateSortUI() {
     sortNearestBtn.classList.toggle("active", sortMode === "nearest");
     sortRatedBtn.classList.toggle("active", sortMode === "rated");
@@ -252,9 +247,7 @@
       const area = a.suburb || a.neighbourhood || a.town || a.village || a.city_district || "";
       const city = a.city || a.county || "";
       locationText.textContent = [area, city].filter(Boolean).join(", ") || "Location found";
-    } catch {
-      locationText.textContent = "Live location active";
-    }
+    } catch { locationText.textContent = "Live location active"; }
   }
 
   function locate() {
@@ -301,6 +294,7 @@
       const updatedAt = data.updatedAt && data.updatedAt.toMillis ? data.updatedAt.toMillis() : (data.updatedAt || 0);
       if (now - updatedAt > STALE_MS) return;
       const distance = haversineKm(coords, { lat: data.lat, lng: data.lng });
+      if (distance > MAX_RANGE_KM) return;
       results.push({ ...data, distance });
     });
     return results;
@@ -308,30 +302,22 @@
 
   function renderHero() {
     if (!db) { heroCount.textContent = "connecting…"; return; }
-    const now = Date.now();
-    const onlineCount = allDocs.filter(d => {
-      const updatedAt = d.updatedAt && d.updatedAt.toMillis ? d.updatedAt.toMillis() : (d.updatedAt || 0);
-      return d.online && (now - updatedAt <= STALE_MS);
-    }).length;
-    heroCount.textContent = `${onlineCount} technician${onlineCount === 1 ? "" : "s"} online near you right now`;
+    const count = computeFiltered("__all__").length;
+    heroCount.textContent = `${count} technician${count === 1 ? "" : "s"} online within 2 km right now`;
   }
 
   function renderList() {
     if (!currentTrade) return;
     if (!db) { listContent.innerHTML = `<div class="searching"><div class="spinner"></div>CONNECTING…</div>`; return; }
-
     const isAll = currentTrade === "__all__";
     const trade = isAll ? null : TRADE_MAP[currentTrade];
-    const sorted = computeFiltered(currentTrade).sort((a,b) =>
-      sortMode === "nearest" ? a.distance - b.distance : (b.rating||0) - (a.rating||0)
-    );
-    listHeading.textContent = isAll ? `${sorted.length} technicians online now` : `${sorted.length} ${trade.label.toLowerCase()} online now`;
+    const sorted = computeFiltered(currentTrade).sort((a,b) => sortMode === "nearest" ? a.distance - b.distance : (b.rating||0) - (a.rating||0));
+    listHeading.textContent = isAll ? `${sorted.length} technicians online within 2 km` : `${sorted.length} ${trade.label.toLowerCase()} within 2 km`;
 
     if (sorted.length === 0) {
-      listContent.innerHTML = `<div class="empty-box">No ${isAll ? "technicians" : trade.label.toLowerCase() + "s"} are online right now. Open the Technician app on another device and go online to test live matching.</div>`;
+      listContent.innerHTML = `<div class="empty-box">No ${isAll ? "technicians" : trade.label.toLowerCase() + "s"} are online within 2 km right now. Open the Technician app on another device and go online to test live matching.</div>`;
       return;
     }
-
     listContent.innerHTML = sorted.map((t) => {
       const primaryTradeId = (t.trades && t.trades[0]) || currentTrade;
       const tr = TRADE_MAP[primaryTradeId] || { color:"#1C2541", icon:"🔧", label:"Technician" };
@@ -357,15 +343,10 @@
           </div>
           <a class="call-btn" href="tel:${t.phone || ""}">📞 Call ${(t.name || "technician").split(" ")[0]}</a>
         </div>
-      </div>
-    `;
+      </div>`;
     }).join("");
   }
 
-  // ------------------------------------------------------------------
-  // Load Firebase LAST via dynamic import, wrapped in try/catch.
-  // Single global listener powers both the hero count and every list view.
-  // ------------------------------------------------------------------
   (async () => {
     try {
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
@@ -378,12 +359,11 @@
         if (currentTrade) renderList();
       }, (err) => {
         heroCount.textContent = "unable to connect";
-        if (currentTrade) listContent.innerHTML = `<div class="empty-box">⚠ Couldn't load live data: ${err.message}</div>`;
+        if (currentTrade) listContent.innerHTML = `<div class="empty-box">⚠ ${err.message}</div>`;
       });
     } catch (e) {
       console.error("Firebase load failed:", e);
       heroCount.textContent = "unable to connect";
-      if (currentTrade) listContent.innerHTML = `<div class="empty-box">⚠ Couldn't connect to the live database: ${e.message}</div>`;
     }
   })();
 </script>
