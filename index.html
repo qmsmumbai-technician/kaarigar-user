@@ -210,6 +210,7 @@
   let sortMode = "nearest";
   let allDocs = [];
   let db = null;
+  let fsDocRef = null, fsUpdateDoc = null, fsIncrement = null;
 
   tradeGrid.innerHTML = TRADES.map(t => `
     <button class="tile" data-trade="${t.id}">
@@ -346,10 +347,19 @@
             <span>⏱ ~${etaMin(t.distance)} min</span>
             <span>★ ${(t.rating || 4.7).toFixed(1)}</span>
           </div>
-          <a class="call-btn" href="tel:${t.phone || ""}">📞 Call ${(t.name || "technician").split(" ")[0]}</a>
+          <a class="call-btn" href="tel:${t.phone || ""}" data-techid="${t._id || ""}">📞 Call ${(t.name || "technician").split(" ")[0]}</a>
         </div>
       </div>`;
     }).join("");
+
+    document.querySelectorAll(".call-btn").forEach((el) => {
+      el.addEventListener("click", () => {
+        const techId = el.dataset.techid;
+        if (techId && db && fsUpdateDoc && fsDocRef && fsIncrement) {
+          fsUpdateDoc(fsDocRef(db, "technicians", techId), { leadCount: fsIncrement(1) }).catch(() => {});
+        }
+      });
+    });
   }
 
   (async () => {
@@ -358,8 +368,9 @@
       const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
       const app = initializeApp(firebaseConfig);
       db = fs.getFirestore(app);
+      fsDocRef = fs.doc; fsUpdateDoc = fs.updateDoc; fsIncrement = fs.increment;
       fs.onSnapshot(fs.collection(db, "technicians"), (snapshot) => {
-        allDocs = snapshot.docs.map(d => d.data());
+        allDocs = snapshot.docs.map(d => ({ ...d.data(), _id: d.id }));
         renderHero();
         if (currentTrade) renderList();
       }, (err) => {

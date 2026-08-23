@@ -1,4 +1,4 @@
-const CACHE = "kaarigar-user-v6";
+const CACHE = "kaarigar-user-v7";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
