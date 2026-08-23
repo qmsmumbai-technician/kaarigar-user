@@ -7,8 +7,10 @@
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#1C2541" />
 <link rel="icon" href="icon-192.png" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,1,0" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+  .msr { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; line-height: 1; -webkit-font-smoothing: antialiased; }
   * { box-sizing: border-box; }
   body { margin:0; font-family:'Inter',sans-serif; background:#F6F4EF; color:#20242C; min-height:100vh; display:flex; justify-content:center; }
   .app { width:100%; max-width:430px; min-height:100vh; background:#F6F4EF; padding-bottom:40px; }
@@ -93,12 +95,12 @@
 
     <div id="screen-services">
       <div class="location-bar">
-        <div class="pin">📍</div>
+        <div class="pin"><span class="msr" style="font-size:20px;color:#2F6FA8">location_on</span></div>
         <div style="flex:1;min-width:0">
           <div class="lbl">YOUR LOCATION</div>
           <div class="val" id="location-text">Locating…</div>
         </div>
-        <button class="locate-btn" id="btn-locate">🎯</button>
+        <button class="locate-btn" id="btn-locate"><span class="msr" style="font-size:17px;color:#1C2541">my_location</span></button>
       </div>
 
       <div class="hero">
@@ -114,21 +116,21 @@
       <div class="grid" id="trade-grid"></div>
 
       <button class="emergency" id="btn-emergency">
-        <div class="siren">🚨</div>
+        <div class="siren"><span class="msr" style="font-size:26px">emergency</span></div>
         <div style="flex:1"><h3>Need help now?</h3><p>See every technician online within 2 km, any trade</p></div>
-        <div class="arrow">→</div>
+        <div class="arrow"><span class="msr" style="font-size:18px">arrow_forward</span></div>
       </button>
 
       <div class="trust-strip">
-        <div class="trust-item"><div class="ic">✅</div><div class="lbl">Verified<br/>technicians</div></div>
-        <div class="trust-item"><div class="ic">⏱️</div><div class="lbl">Live<br/>availability</div></div>
-        <div class="trust-item"><div class="ic">💰</div><div class="lbl">Fair<br/>pricing</div></div>
-        <div class="trust-item"><div class="ic">⭐</div><div class="lbl">Rated by<br/>users</div></div>
+        <div class="trust-item"><div class="ic"><span class="msr" style="color:#2E8B57">verified</span></div><div class="lbl">Verified<br/>technicians</div></div>
+        <div class="trust-item"><div class="ic"><span class="msr" style="color:#2F6FA8">schedule</span></div><div class="lbl">Live<br/>availability</div></div>
+        <div class="trust-item"><div class="ic"><span class="msr" style="color:#3FA796">payments</span></div><div class="lbl">Fair<br/>pricing</div></div>
+        <div class="trust-item"><div class="ic"><span class="msr" style="color:#F2A93B">star</span></div><div class="lbl">Rated by<br/>users</div></div>
       </div>
     </div>
 
     <div id="screen-list" style="display:none">
-      <button class="back-btn" id="btn-back">← All services</button>
+      <button class="back-btn" id="btn-back"><span class="msr" style="font-size:16px">arrow_back</span> All services</button>
       <h3 class="section-title" id="list-heading">0 online now</h3>
       <div class="sort-row">
         <button class="sort-chip active" id="sort-nearest">Nearest</button>
@@ -150,25 +152,25 @@
   };
 
   const TRADES = [
-    { id:"plumbing", label:"Plumber", icon:"🔧", color:"#2F6FA8" },
-    { id:"electrical", label:"Electrician", icon:"⚡", color:"#C77D1E" },
-    { id:"carpentry", label:"Carpenter", icon:"🔨", color:"#8B5E3C" },
-    { id:"ac_technician", label:"AC Technician", icon:"❄️", color:"#2E9BB0" },
-    { id:"ro_water", label:"RO / Water Purifier", icon:"💧", color:"#1E88A8" },
-    { id:"washing_machine", label:"Washing Machine", icon:"🌀", color:"#6B5CA5" },
-    { id:"refrigerator", label:"Refrigerator", icon:"🧊", color:"#2E8B57" },
-    { id:"tv_repair", label:"TV Repairing", icon:"📺", color:"#4A4A68" },
-    { id:"home_cleaning", label:"Home Cleaning", icon:"🧹", color:"#3FA796" },
-    { id:"pest_control", label:"Pest Control", icon:"🐜", color:"#7A8B3C" },
-    { id:"window_sliding", label:"Window Sliding", icon:"🪟", color:"#5C7A9E" },
-    { id:"fabrication", label:"Fabrication", icon:"🛠️", color:"#7A5C3C" },
-    { id:"pooja_pandit", label:"Pooja Pandit", icon:"🕉️", color:"#B8722E" },
-    { id:"computer_repair", label:"Computer Repair", icon:"💻", color:"#45577A" },
-    { id:"painter", label:"Painter", icon:"🎨", color:"#C15A4E" },
-    { id:"marriage_photography", label:"Photography", icon:"📷", color:"#A34D77" },
-    { id:"key_maker", label:"Key Maker", icon:"🔑", color:"#9C7A2E" },
-    { id:"water_supplier", label:"Water Supplier", icon:"🚛", color:"#2E7FA6" },
-    { id:"kabadi_wala", label:"Kabadi Wala", icon:"♻️", color:"#6B8E4E" }
+    { id:"plumbing", label:"Plumber", icon:"plumbing", color:"#2F6FA8" },
+    { id:"electrical", label:"Electrician", icon:"bolt", color:"#C77D1E" },
+    { id:"carpentry", label:"Carpenter", icon:"handyman", color:"#8B5E3C" },
+    { id:"ac_technician", label:"AC Technician", icon:"ac_unit", color:"#2E9BB0" },
+    { id:"ro_water", label:"RO / Water Purifier", icon:"water_drop", color:"#1E88A8" },
+    { id:"washing_machine", label:"Washing Machine", icon:"local_laundry_service", color:"#6B5CA5" },
+    { id:"refrigerator", label:"Refrigerator", icon:"kitchen", color:"#2E8B57" },
+    { id:"tv_repair", label:"TV Repairing", icon:"tv", color:"#4A4A68" },
+    { id:"home_cleaning", label:"Home Cleaning", icon:"cleaning_services", color:"#3FA796" },
+    { id:"pest_control", label:"Pest Control", icon:"pest_control", color:"#7A8B3C" },
+    { id:"window_sliding", label:"Window Sliding", icon:"blinds", color:"#5C7A9E" },
+    { id:"fabrication", label:"Fabrication", icon:"precision_manufacturing", color:"#7A5C3C" },
+    { id:"pooja_pandit", label:"Pooja Pandit", icon:"temple_hindu", color:"#B8722E" },
+    { id:"computer_repair", label:"Computer Repair", icon:"computer", color:"#45577A" },
+    { id:"painter", label:"Painter", icon:"format_paint", color:"#C15A4E" },
+    { id:"marriage_photography", label:"Photography", icon:"photo_camera", color:"#A34D77" },
+    { id:"key_maker", label:"Key Maker", icon:"key", color:"#9C7A2E" },
+    { id:"water_supplier", label:"Water Supplier", icon:"local_shipping", color:"#2E7FA6" },
+    { id:"kabadi_wala", label:"Kabadi Wala", icon:"recycling", color:"#6B8E4E" }
   ];
   const TRADE_MAP = Object.fromEntries(TRADES.map(t => [t.id, t]));
   const STALE_MS = 2 * 60 * 1000;
@@ -208,7 +210,7 @@
 
   tradeGrid.innerHTML = TRADES.map(t => `
     <button class="tile" data-trade="${t.id}">
-      <div class="ic" style="background:linear-gradient(160deg,${t.color},${t.color}CC);color:#fff">${t.icon}</div>
+      <div class="ic" style="background:linear-gradient(160deg,${t.color},${t.color}CC);color:#fff"><span class="msr" style="font-size:22px">${t.icon}</span></div>
       <div class="lbl">${t.label}</div>
     </button>
   `).join("");
@@ -320,11 +322,11 @@
     }
     listContent.innerHTML = sorted.map((t) => {
       const primaryTradeId = (t.trades && t.trades[0]) || currentTrade;
-      const tr = TRADE_MAP[primaryTradeId] || { color:"#1C2541", icon:"🔧", label:"Technician" };
+      const tr = TRADE_MAP[primaryTradeId] || { color:"#1C2541", icon:"handyman", label:"Technician" };
       return `
       <div class="tech-card">
         <div class="tech-stub" style="background:linear-gradient(160deg,${tr.color},${tr.color}CC)">
-          <div style="font-size:16px">${tr.icon}</div>
+          <div><span class="msr" style="font-size:18px">${tr.icon}</span></div>
           <div class="tech-stub-label">${tr.label}</div>
         </div>
         <div class="tech-body">
