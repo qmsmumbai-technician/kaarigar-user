@@ -11,6 +11,14 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
   .msr { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; line-height: 1; -webkit-font-smoothing: antialiased; }
+
+  #splash-screen {
+    position: fixed; inset: 0; z-index: 9999; background: #F6F4EF;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    transition: opacity 0.4s ease;
+  }
+  #splash-screen img { width: 100%; max-width: 420px; max-height: 88vh; object-fit: contain; border-radius: 14px; box-shadow: 0 8px 30px rgba(28,37,65,0.25); }
+  #splash-screen.fade-out { opacity: 0; pointer-events: none; }
   * { box-sizing: border-box; }
   body { margin:0; font-family:'Inter',sans-serif; background:#F6F4EF; color:#20242C; min-height:100vh; display:flex; justify-content:center; }
   .app { width:100%; max-width:430px; min-height:100vh; background:#F6F4EF; padding-bottom:40px; }
@@ -85,6 +93,9 @@
 </style>
 </head>
 <body>
+<div id="splash-screen">
+  <img src="splash.jpg" alt="Kaarigar — Connecting Technicians for Home Service" />
+</div>
 <div class="app">
   <header>
     <h1>KAARIGAR</h1>
@@ -192,6 +203,15 @@
   const initials = (n) => (n||"?").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase();
 
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
+
+  // Show the splash screen for exactly 5 seconds, then reveal the app underneath.
+  // The app keeps loading/locating in the background during this time, so it's
+  // ready to go the moment the splash fades out.
+  setTimeout(() => {
+    const splash = document.getElementById("splash-screen");
+    splash.classList.add("fade-out");
+    setTimeout(() => splash.remove(), 450);
+  }, 5000);
 
   const screenServices = document.getElementById("screen-services");
   const screenList = document.getElementById("screen-list");
